@@ -30,7 +30,8 @@
 								data-options="plain:true,iconCls:'icon-man'">张</a>,欢迎使用
 						</span>
 						<span>
-							| <a href="https://www.baidu.com" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-logout'">退出</a>
+							| <a href="https://www.baidu.com" class="easyui-linkbutton"
+								data-options="plain:true,iconCls:'icon-logout'">退出</a>
 						</span>
 					</td>
 				</tr>
@@ -40,10 +41,75 @@
 	<div data-options="region:'west',split:true,title:' '" style="width:20%;padding:10px;">模板维护</div>
 
 	<div data-options="region:'center'" style="padding: 0px;">
-		<div class="easyui-panel"  data-options="fit:true,border:false" href="tabs.html">
+		<!-- <div class="easyui-panel"  data-options="fit:true,border:false" href="tabs.html">
 			
+		</div> -->
+
+		<div style="margin-bottom:20px">
+			<select class="easyui-combogrid" name="state" label="State:" labelPosition="top" style="width:50%;"
+				data-options="required:true,queryParams:{'baseInfoTheme':'GOODS_TYPE','baseInfoType':'1'},searchForm:true">
+
+			</select>
+			<select class="easyui-combogrid" name="state" label="State:" labelPosition="top" style="width:50%;"
+				data-options="url:'https://mdm.vikvon.com' + '/api/goodsBaseInfo/getGoodsBaseInfoList',method:'get',idField: 'baseInfoCode',textField: 'displayName',pagination: true,
+				columns: [[{ field: 'baseInfoCode', title: '编码', width: '250px' },{ field: 'displayName', title: '名称', width: '200px' }]],required:true,queryParams:{'baseInfoTheme':'BRAND','baseInfoType':'1'},searchForm:true">
+
+			</select>
 		</div>
 	</div>
+
+	<div id="xxxxxxxxxx">
+		<input class="easyui-searchbox" data-options="prompt:'编码搜索',width:'200px'">
+		</input>
+	</div>
 </body>
+<script type="text/javascript">
+	function searchGrid() {
+
+		console.log("xxxx");
+	}
+
+	$.extend($.fn.combogrid.defaults, {
+		url: 'https://mdm.vikvon.com' + '/api/goodsBaseInfo/getGoodsBaseInfoList',
+		method: 'get',
+		panelWidth: 520,
+		// panelHeight:'auto',
+		editable: false,
+		pagination: true,
+		pageList: [5],
+		pageSize: 5,
+		idField: 'baseInfoCode',
+		textField: 'displayName',
+		columns: [[
+			{ field: 'baseInfoCode', title: '编码', width: '250px' },
+			{ field: 'displayName', title: '名称', width: '200px' }
+		]],
+		onShowPanel: function () {
+			var comgridThis = $(this);
+			if (comgridThis.combogrid('options').searchForm) {
+				comgridThis.combogrid('options').searchForm = false;
+				var searchId = "" + Math.random();
+				searchId = searchId.substring(2);
+				var inputHtml = "<div id='" + searchId + "'><input></input></div>";
+				inputHtml = $(document.body).append(inputHtml);
+				$("#" + searchId + " input").searchbox({
+					searcher: function (value) {
+						comgridThis.combogrid('options').queryParams = $.extend(comgridThis.combogrid('options').queryParams, {
+							displayName:value
+						});
+						comgridThis.combogrid('grid').datagrid('load');
+					},
+					prompt:'输入XX',
+					width:'120'
+				});
+				var pager = comgridThis.combogrid('grid').datagrid('getPager');
+				pager.pagination({
+					layout: ['first', 'prev', 'sep', 'next', 'last', 'sep', 'refresh', 'info'],
+					buttons: $("#" + searchId)
+				});
+			}
+		}
+	});
+</script>
 
 </html>
