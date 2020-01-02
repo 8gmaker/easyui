@@ -55,6 +55,8 @@
 				columns: [[{ field: 'baseInfoCode', title: '编码', width: '250px' },{ field: 'displayName', title: '名称', width: '200px' }]],required:true,queryParams:{'baseInfoTheme':'BRAND','baseInfoType':'1'},searchForm:true">
 
 			</select>
+			<select class="easyui-combotree" style="width:300px;"
+				data-options="required:true,label:'品类',queryParams:{categoryType:'7'}"></select>
 		</div>
 	</div>
 
@@ -62,13 +64,9 @@
 		<input class="easyui-searchbox" data-options="prompt:'编码搜索',width:'200px'">
 		</input>
 	</div>
+
 </body>
 <script type="text/javascript">
-	function searchGrid() {
-
-		console.log("xxxx");
-	}
-
 	$.extend($.fn.combogrid.defaults, {
 		url: 'https://mdm.vikvon.com' + '/api/goodsBaseInfo/getGoodsBaseInfoList',
 		method: 'get',
@@ -95,12 +93,12 @@
 				$("#" + searchId + " input").searchbox({
 					searcher: function (value) {
 						comgridThis.combogrid('options').queryParams = $.extend(comgridThis.combogrid('options').queryParams, {
-							displayName:value
+							displayName: value
 						});
 						comgridThis.combogrid('grid').datagrid('load');
 					},
-					prompt:'输入XX',
-					width:'120'
+					prompt: '输入XX',
+					width: '120'
 				});
 				var pager = comgridThis.combogrid('grid').datagrid('getPager');
 				pager.pagination({
@@ -110,6 +108,42 @@
 			}
 		}
 	});
+	$.parser.plugins.push("combocattree");
+	$.fn.combocattree = function (options, param) {
+		//https://www.cnblogs.com/zycbloger/p/7592078.html
+		console.log('xxxx');
+	}
+
+	$.extend($.fn.combotree.defaults, {
+		url: 'https://mdm.vikvon.com' + '/api/goodsCategory/getGoodsCategoryList',
+		method: 'get',
+		panelWidth: '300',
+		lines: true,
+		loader: function (param, success, error) {
+			var request = $.extend({}, $(this).tree('options').queryParams);
+			if (param.id) {
+				var node = $(this).tree('find', param.id);
+				request = {
+					categoryType: node.categoryType,
+					parentCategoryCode: node.categoryCode
+				};
+			}
+			$.get($(this).tree('options').url, request, success);
+		},
+		loadFilter: function (data, parent) {
+			$.each(data, function (index, element) {
+				if (element.leafFlag == 0 && !element.children) {
+					element.state = "closed";
+				}
+				element.text = element.categoryCode + '-' + element.categoryName;
+			});
+			return data;
+		},
+		formatter: function (node) {
+			return node.categoryCode + '-' + node.categoryName;
+		}
+	});
+
 </script>
 
 </html>
