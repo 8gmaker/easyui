@@ -8,7 +8,7 @@
 	<link rel="stylesheet" type="text/css" href="../themes/icon.css">
 	<link rel="stylesheet" type="text/css" href="../demo/demo.css">
 	<script type="text/javascript" src="../jquery.min.js"></script>
-	<script type="text/javascript" src="../jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../jquery.easyui.min.js?v=1"></script>
 	<style rel="stylesheet" type="text/css">
 		.l-btn-icon {
 			background-size: contain;
@@ -141,6 +141,12 @@
 		},
 		formatter: function (node) {
 			return node.categoryCode + '-' + node.categoryName;
+		},
+		onBeforeSelect:function(node){
+			if (node.leafFlag == 0){
+				return false;
+			}
+			return true;
 		}
 	});
 
